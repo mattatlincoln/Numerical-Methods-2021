@@ -86,3 +86,25 @@ in principle you can use any high level programming language as the focus is on 
 - to work with Python I recommend Anaconda python which can be downloaded from [here](https://www.anaconda.com/products/individual) - click on the download button then pick the correct installer. I like using Jupyter notebooks – see the notebooks on Blackboard for reminder on how to use them - but there are many other nice working environments.  <img src='python_logo.png' width=100px>
 
 You can use either of these languages – it would be very beneficial for you to see what parts are essential and what are trivial details of a particular language to try and use both. Would be good for your CV too.
+
+
+```python
+import numpy as np
+x = np.linspace(0,10)
+y = np.sin(x)
+```
+
+
+```python
+import matplotlib.pyplot as plt
+plt.plot(x,y);
+```
+
+
+![png](output_9_0.png)
+
+
+
+```python
+
+```
