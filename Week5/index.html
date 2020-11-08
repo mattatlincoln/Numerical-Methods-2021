@@ -1,0 +1,783 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <title>Numerical Methods - Curve Fitting 2</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+  <!-- General and theme style sheets -->
+  <link rel="stylesheet" href="../../../revealjs/css/reveal.css">
+  <link rel="stylesheet" href="../../../revealjs/css/theme/beige.css" id="theme">
+
+  <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+  <script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = '../../../revealjs/css/print/pdf.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+
+  </script>
+
+  <!--[if lt IE 9]>
+  <script src="../../../revealjs//lib/js/html5shiv.js"></script>
+<![endif]-->
+
+<!-- Loading the mathjax macro -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+<!-- Load mathjax -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+<!-- MathJax configuration -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+  tex2jax: {
+  inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+  displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+  processEscapes: true,
+  processEnvironments: true
+},
+// Center justify equations in code and markdown cells. Elsewhere
+// we use CSS to left justify single line equations in code cells.
+displayAlign: 'center',
+"HTML-CSS": {
+styles: {'.MathJax_Display': {"margin": 0}},
+linebreaks: { automatic: true }
+}
+});
+</script>
+<!-- End of mathjax configuration -->
+
+<!-- Get Font-awesome from cdn -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.css">
+
+<!-- Custom stylesheet, it must be in the same directory as the html file -->
+<link rel="stylesheet" href="../custom.css">
+
+</head>
+<body>
+
+  <div class="reveal">
+    <div class="slides">
+
+      <section data-background-image="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Anscombe%27s_quartet_3.svg/2000px-Anscombe%27s_quartet_3.svg.png">
+        <h2 style="color:white;" id="Numerical Methods Week 3">Numerical Methods Week 4<a class="anchor-link" href="#Numerical Methods Week 3">&#182;</a></h2>
+        <h1 style="color:white;" id="Curve Fitting 2">Curve Fitting 2<a class="anchor-link" href="#Curve Fitting 2">&#182;</a></h1>
+        <div style="background-color:Lavender; margin-left: 20px; margin-right: 20px; padding-bottom: 8px; padding-left:
+        8px; padding-right: 8px; padding-top: 8px; border-radius: 25px;">
+        <p>We continue with Curve Fitting. This week polynomial and multiple linear regression.</p>
+        <p>Reading: Capra and Canale, introduction to part 5 and chapter 17.</p>
+      </div>
+      <br>
+      <div style="background-color:Gold; margin-left: 20px; margin-right: 20px; padding-bottom: 8px; padding-left:
+      8px; padding-right: 8px; padding-top: 8px; border-radius: 25px;">
+      <p>Learning outcomes:</p>
+      <li> Extend the work on Linear Regression to polynomial and multiple variables.</li>
+      <li> Combine C++, python and analytical solutions or other platforms.</li>
+      <li> Check your code works correctly, via an external reference.</li>	
+    </div>
+    <br>
+    <div style="background-color:Lavender; margin-left: 20px; margin-right: 20px; padding-bottom: 8px; padding-left:
+    8px; padding-right: 8px; padding-top: 8px; border-radius: 25px;">
+
+    <h3>Matt Watkins mwatkins@lincoln.ac.uk<a class="anchor-link" href="#Matt Watkins">&#182;</a></h3>
+  </div>
+</section>
+
+<section>
+  <section>
+    <div class="inner_cell">
+     <h2>Reusing code</h2>
+     <p>You may dislike having lots of code / routines copied around everytime we reuse something</p>
+     <p>The solution is to $\textbf{include}$ other files or, generally, libraries.</p>
+     <p>We can make our own library file by copying functions other than <span style='font-family: monospace'>main</span> into a file called <span style='font-family: monospace'>'my_library.h'</span></p>
+     <table>
+       <tr>
+         <td>
+           <img src='../images/include_dir_0.png'>
+         </td>
+       </tr>
+     </table>
+   </div>
+ </section>
+ <section>
+  <div class="inner_cell">
+   <table>
+     <tr>
+       <td>
+         <img src='../images/include_dir_1.png'>
+       </td>
+     </tr>
+   </table>
+   <p>This is my example project. Right click on the $\textbf{bolded}$ project name in the pane to right.</p>
+   <p>Then select  <span style='font-family: monospace'>properties</span>.</p>
+ </div>
+</section>
+<section>
+  <div class="inner_cell">
+   <p>A new window should have appeared, like this:</p>
+   <table>
+     <tr>
+       <td>
+         <img src='../images/include_dir_2.png'>
+       </td>
+     </tr>
+   </table>
+   <p>Open the <span style='font-family: monospace'>C/C++</span> then the   <span style='font-family: monospace'>General</span> tab</p>
+ </div>
+</section>
+<section>
+  <div class="inner_cell">
+   <p>Then click on drop down button in the second column of the the 'Additional Include Directories' row and select edit</p>
+   <table>
+     <tr>
+       <td>
+         <img src='../images/include_dir_3.png'>
+       </td>
+     </tr>
+   </table>
+ </div>
+</section>
+<section>
+  <div class="inner_cell">
+   <p>You should see something like this:</p>
+   <table>
+     <tr>
+       <td>
+         <img src='../images/include_dir_4.png'>
+       </td>
+     </tr>
+   </table>
+ </div>
+</section>
+<section>
+  <div class="inner_cell">
+   <p>Click on the folder icon, and select the directory where you saved your 'my_library.h' file in</p>
+   <table>
+     <tr>
+       <td>
+         <img src='../images/include_dir_5.png'>
+       </td>
+     </tr>
+   </table>
+   <div class="inner_cell">
+   </section>
+   <section>
+    <div class="inner_cell">
+     <table>
+       <tr>
+         <td>
+           <img src='../images/include_dir_6.png'>
+         </td>
+       </tr>
+     </table>
+     <p>Now I can add a #include line in the file and use any functions in the library .</p>
+   </div>
+ </section>
+</section>
+
+<section>
+  <div class="inner_cell">
+   <p>To include the Eigen library, 
+    <li>save and extract the library (you can find it on the front page of the learning resources tab) </li>
+    <li> add the directory containing the extracted Eigen folder to the include path.</li>
+    <li> here is an example.</li>
+   <pre><code>
+#include &ltiostream&gt
+#include &ltEigen/Dense&gt
+using Eigen::Matrix2d;
+using namespace std;
+
+int main()
+{
+  Matrix2d A, b;
+  A << 2, -1, -1, 3;
+  b << 1, 0, 0, 1;
+  cout << "Here is the matrix A:\n" << A << endl;
+  cout << "Here is the right hand side b:\n" << b << endl;
+  Matrix2d x = A.ldlt().solve(b);
+  cout << "The solution is:\n" << x << endl;
+  cout << A * x;
+}
+   </code></pre></p>
+   </div>
+ </section>
+</section>
+
+<section>
+  <div class="inner_cell">
+    <p>Here is some code to read in a matrix from a csv file. Assumes the header contains the number of rows then number of columns.</p>
+    <pre><code>
+#include &ltiostream&gt
+#include &ltEigen/Dense&gt
+#include &ltfstream&gt
+#include &ltstring&gt
+using Eigen::MatrixXd;
+using namespace std;
+
+MatrixXd slurpData()
+{
+  string nfile, temp;
+  int Ncol, Nrow;
+  cout << "Insert the name of the file containing the coefficient and the constant terms" << "\n";
+  cin >> nfile;
+  ifstream myFile(nfile);
+  // Read the size of the matrix
+  if (myFile.is_open()) {
+    cout << "\nopened file\n\n";
+    getline(myFile, temp, ',');
+    Nrow = stoi(temp);
+    cout << "found file: Nrows = " << Nrow << "\n\n";
+    getline(myFile, temp, '\n');
+    Ncol = stoi(temp);
+    cout << "found file: Ncols = " << Ncol << "\n\n";
+  }
+
+  MatrixXd a(Nrow, Ncol);
+
+  // Read the array
+  for (int i = 0; i < Nrow; ++i) {
+    for (int j = 0; j < Ncol - 1; ++j) {
+      getline(myFile, temp, ',');
+      a(i, j) = stod(temp);
+      cout << a(i, j) << ", ";
+    }
+    getline(myFile, temp, '\n');
+    a(i, Ncol - 1) = stod(temp);
+    cout << a(i, Ncol - 1) << "\n";
+  }
+
+  return a;
+}
+
+int main()
+{
+  MatrixXd a;
+  a = slurpData();
+  cout << a.rows() << " " << a.cols();
+}
+    </code></pre>
+  </div>  
+</section>
+
+<section>
+  <div class="inner_cell">
+    <h3 id="Feedback: Fitting a Quadratic function">Fitting a Quadratic function<a class="anchor-link" href="#Fitting a Quadratic function">&#182;</a></h3>
+    <p>In the case that the largest power of $x$ is $x^2$ we have
+     $$
+     y_i (a_0, a_1, a_2; x_i) = a_0 + a_1 x_i + a_2 x_i^2 + e_i
+     $$
+     and an overall error function
+     $$
+     S_r (a_0, a_1, a_2) = \sum_{i=0}^{N-1} (y_i - a_0 - a_1 x_i - a_2 x_i^2)^2
+     $$
+   </p>
+   <p>This leads to a set of equations
+     \begin{align*}
+     \frac{\delta S_r (a_0, a_1, a_2)}{\delta a_0} & \implies \left(n\right)a_0 + \left(\sum x_i\right) a_1 + \left(\sum x_i^2\right) a_2 & = \sum y_i \\
+     \frac{\delta S_r (a_0, a_1, a_2)}{\delta a_1} & \implies \left(\sum x_i\right) a_0 + \left(\sum x_i^2\right) a_1 + \left(\sum x_i^3\right) a_2 & = \sum x_i y_i \\
+     \frac{\delta S_r (a_0, a_1, a_2)}{\delta a_2} & \implies \left(\sum x_i^2\right) a_0  + \left(\sum x_i^3\right) a_1 + \left(\sum x_i^4\right) a_2 & = \sum x_i^2 y_i \\
+     \end{align*}
+   </p>
+
+   <div style="background-color:Lavender; margin-left: 20px; margin-right: 20px; padding-bottom: 8px; padding-left:
+   8px; padding-right: 8px; padding-top: 8px; border-radius: 25px;">
+   <li> Derive the above equations by differentiating $S_r$ with respect to each of the $a_i$ in turn.</li>	
+   <li> Write the equations in matrix form $\textbf{A}x = b$, where $x$ is a column matrix with entries $a_0, a_1, a_2$ and $b$ is a column matrix with terms that do not depend on the fitting parameters, $a_0$, $a_1$  and  $a_2$. </li>
+   <li> Solve for $a_0$, $a_1$  and  $a_2$.</li>
+   <li> Plot your fitted parabola against the data to check the fit.</li>
+ </div>      
+</div>           
+</section>
+
+<section>
+  <div class="inner_cell">
+    <h3 id="Feedback: Fitting a Quadratic function">Fitting a Quadratic function<a class="anchor-link" href="#Fitting a Quadratic function">&#182;</a></h3>
+    <p>This leads to a set of equations
+     \begin{align*}
+     \frac{\delta S_r (a_0, a_1, a_2)}{\delta a_0} & \implies \left(n\right)a_0 + \left(\sum x_i\right) a_1 + \left(\sum x_i^2\right) a_2 & = \sum y_i \\
+     \frac{\delta S_r (a_0, a_1, a_2)}{\delta a_1} & \implies \left(\sum x_i\right) a_0 + \left(\sum x_i^2\right) a_1 + \left(\sum x_i^3\right) a_2 & = \sum x_i y_i \\
+     \frac{\delta S_r (a_0, a_1, a_2)}{\delta a_2} & \implies \left(\sum x_i^2\right) a_0  + \left(\sum x_i^3\right) a_1 + \left(\sum x_i^4\right) a_2 & = \sum x_i^2 y_i \\
+     \end{align*}
+   </p>
+   <p>
+    We can rewrite these equations as
+    $$
+    \begin{pmatrix}
+    \left(\sum x_i^0\right) & \left(\sum x_i\right)  & \left(\sum x_i^2\right) \\ 
+    \left(\sum x_i\right)  & \left(\sum x_i^2\right) & \left(\sum x_i^3\right) \\ 
+    \left(\sum x_i^2\right)   & \left(\sum x_i^3\right)  & \left(\sum x_i^4\right) \\ 
+    \end{pmatrix}
+    \begin{pmatrix}
+    a_0 \\
+    a_1 \\
+    a_2 
+    \end{pmatrix} =
+    \begin{pmatrix}
+    \sum y_i \\
+    \sum x_i y_i \\
+    \sum x_i^2 y_i 
+    \end{pmatrix}
+    $$
+  </p>
+  <p> Which is of the form $\textbf{A}x = b$</p>
+</div>      
+</section>
+
+<section>
+  <div class="inner_cell">
+    <h2>Worked example of polynomial fit - using new fancy matrices</h2>
+    <p>
+      <li> Get the data into a readable form - I suggest using Excel and the 'Text to Columns' function under the 'DATA' tab</li>
+      <li> The code to read from a csv file assumes that the first row contains the number of rows, then number of columns</li>
+      <li> Save as csv in the same directory as the project you are working on</li>
+      <li> Add in the Eigen library</li>
+      <li> Write routine(s) to calculate the required sums</li>
+      <li> Use Eigen to solve the system of linear equations. See <a href="http://eigen.tuxfamily.org/dox/group__TutorialLinearAlgebra.html">this tutorial</a> for examples. We'll discuss some of the solvers later.</li>
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="inner_cell">
+    <p>Full code here</p>
+    <pre><code>
+#include &ltiostream&gt
+#include &ltEigen/Dense&gt
+#include &ltfstream&gt
+#include &ltcmath&gt
+#include &ltstring&gt
+using Eigen::MatrixXd;
+using Eigen::VectorXd;
+using namespace std;
+
+MatrixXd slurpData()
+{
+  string nfile, temp;
+  int Ncol, Nrow;
+  cout << "Insert the name of the file containing the coefficient and the constant terms" << "\n";
+  cin >> nfile;
+  ifstream myFile(nfile);
+  // Read the size of the matrix
+  if (myFile.is_open()) {
+    cout << "\nopened file\n\n";
+    getline(myFile, temp, ',');
+    Nrow = stoi(temp);
+    cout << "found file: Nrows = " << Nrow << "\n\n";
+    getline(myFile, temp, '\n');
+    Ncol = stoi(temp);
+    cout << "found file: Ncols = " << Ncol << "\n\n";
+  }
+
+  MatrixXd a(Nrow, Ncol);
+
+  // Read the array
+  for (int i = 0; i < Nrow; ++i) {
+    for (int j = 0; j < Ncol - 1; ++j) {
+      getline(myFile, temp, ',');
+      a(i, j) = stod(temp);
+    //  cout << a(i, j) << ", ";
+    }
+    getline(myFile, temp, '\n');
+    a(i, Ncol - 1) = stod(temp);
+    //cout << a(i, Ncol - 1) << "\n";
+  }
+
+  return a;
+}
+
+double sumData(MatrixXd myData,int powX,int powY)
+{
+  double sum = 0;
+  for (int i = 0; i < myData.rows(); i++) {
+    sum += pow(myData(i, 0), powX) * pow(myData(i, 1), powY);
+  }
+  return sum;
+}
+
+int main()
+{
+  MatrixXd a;
+  a = slurpData();
+  //cout << a.rows() << " " << a.cols();
+
+  MatrixXd A(3, 3); 
+  A(0, 0) = sumData(a, 0, 0);
+  A(0, 1) = sumData(a, 1, 0);
+  A(0, 2) = sumData(a, 2, 0);
+  A(1, 0) = sumData(a, 1, 0);
+  A(1, 1) = sumData(a, 2, 0);
+  A(1, 2) = sumData(a, 3, 0);
+  A(2, 0) = sumData(a, 2, 0);
+  A(2, 1) = sumData(a, 3, 0);
+  A(2, 2) = sumData(a, 4, 0);
+
+  cout << A << "\n\n";
+
+  VectorXd b(3);
+  b(0) = sumData(a, 0, 1);
+  b(1) = sumData(a, 1, 1);
+  b(2) = sumData(a, 2, 1);
+
+  cout << b << "\n\n";
+
+  VectorXd x(3);
+  x = A.ldlt().solve(b);
+  cout << x << "\n\n";
+}      
+    </code></pre>
+  </div>
+</section>
+
+<section>
+  <div class="inner_cell">
+    <h2 id="General Linear Least Squares">General Linear Least Squares<a class="anchor-link" href="#General Linear Least Squares">&#182;</a></h2>
+    <p>$\newcommand{\vect}[1]{\boldsymbol{#1}}​$Simple linear, polynomial and multiple linear regression can be generalised to the following linear least-squares model
+     $$
+     y_i = a_0 z_0 (x_i) + a_1 z_1 (x_i) + a_2 z_2 (x_i) + \cdots + a_{m-1} z_{m-1} (x_i) + e_i
+     $$
+     can now not polynomials in $x$ but some <em>predefined</em> functions of those positions</p>
+     <p>  $z_0(x), z_1( x), \ldots , z_{m-1}( x )$ are $m$ $\textbf{basis functions}$. The predefined basis functions define the model, only depend on the $x$ coordinate.
+    I is called linear least squares as the parameters $a_0, a_1, \ldots, a_{m-1}$ appear linearly. The $z$s can be highly non-linear in $x$.</p>
+   <p>For instance.
+     $$
+     y_i = a_0 \cdot 1 + a_1 \cos (\omega x_i) + a_2 \sin (\omega x_i)
+     $$
+     fits this model with $z_0 = 1, z_1 = \cos(\omega x_0)$ and $z_2 = \sin(\omega x_0)$. Where $x$ is a single independent variable and $\omega$ is a predefined constant.</p>
+ </div>
+</section>
+
+<section>
+  <div class="inner_cell">
+    <h2 id="General Linear Least Squares">General Linear Least Squares<a class="anchor-link" href="#General Linear Least Squares">&#182;</a></h2>
+    <p>We can rewrite
+     $$
+     y_i = a_0 z_0 (x_i) + a_1 z_1 (x_i) + a_2 z_2 (x_i) + \cdots + a_{m-1} z_{m-1} (x_i) + e_i
+     $$
+     in matrix notation as
+     $$
+     \vect{y} = \vect{Z} \vect{a} + \vect{e}
+     $$
+     where bold lower case indicates a column vector, and bold uppercase indicates a matrix.
+     $\vect{Z}$ contains the calculated values of the $m$ basis functions at the $n$ measured values of the independent variables:
+     $$
+     \vect{Z} =
+     \left[
+     \begin{matrix}
+     z_0 (x_0) & z_1 (x_0) & \cdots & z_{m-1} (x_0) \\
+     z_0 (x_1) & z_1 (x_1) & \cdots & z_{m-1} (x_1) \\
+     \vdots & \vdots & \ddots & \vdots \\
+     z_0 (x_{n-1}) & z_1 (x_{n-1}) & \cdots & z_{m-1} (x_{n-1}) \\
+     \end{matrix}
+     \right]
+     $$
+   </p>
+
+   <p>
+    The column vector $\vect{y}$ contains the $n+1$ observed values of the dependent variable
+    $$
+    \vect{y}^T = \left[y_0, y_1, y_2, y_3, \ldots, y_{n-1}  \right]
+    $$
+    The column vector $\vect{a}$ contains the $m+1$ unknown parameters of the model
+    $$
+    \vect{a}^T = \left[a_0, a_1, a_2, \ldots, a_{m-1}  \right]
+    $$
+    The column vector $\vect{e}$ contains the $n+1$ observed residuals (errors)
+    $$
+    \vect{e}^T = \left[e_0, e_1, e_2, e_3, \ldots, e_{n-1}  \right]
+    $$
+
+  </p>
+</div>
+</section>
+
+<section>
+  <div class="inner_cell">
+    <h2 id="General Linear Least Squares">General Linear Least Squares<a class="anchor-link" href="#General Linear Least Squares">&#182;</a></h2>
+    <p>We can also express error in our model as a sum of the squares much like before:
+     $$\begin{align*}
+     S_r & = \sum_{i=0}^{n}\left(y_i - \sum_{j=0}^{m} a_j z_{ji}  \right)^2 \\
+        & = \sum e_i^2 = \vect{e}^T \vect{e} = (\vect{y} - \vect{Z} \vect{a})^T (\vect{y} - \vect{Z} \vect{a})
+     \end{align*}$$
+     $S_r$ is minimised by taking partial derivatives wrt $\vect{a}$, which yields
+     $$
+     \vect{Z}^T \vect{Z} \vect{a} = \vect{Z}^T \vect{y}
+     $$
+     which is exactly equivalent to the set of simultaneous equations for $a_i$ we found previously when fitting polynomials.
+     More details can of the derivation can be found <a href="http://fourier.eng.hmc.edu/e176/lectures/NM/node35.html">here</a>, though the notation is a little different.
+   </p>
+   <p>
+     This set of equations is of the form $\vect{A} \vect{x} = \vect{b}$ and can be solved using gauss elimination or similar method.
+   </p>
+   <div style="background-color:Lavender; margin-left: 20px; margin-right: 20px; padding-bottom: 8px; padding-left:
+   8px; padding-right: 8px; padding-top: 8px; border-radius: 25px;">
+   <p>Try to redo the earlier fitting problems in this notation / method.</p>
+ </div><br><br>
+</div>
+</section>
+
+
+<section><section>
+  <div class="inner_cell">
+    <h2 id="General Linear Least Squares - Example">General Linear Least Squares - Example<a class="anchor-link" href="#General Linear Least Squares - Example">&#182;</a></h2>
+    <p>
+      Suppose we have 11 measurements at 
+      $$
+      x^T = [-3. , -2.3, -1.6, -0.9, -0.2,  0.5,  1.2,  1.9,  2.6,  3.3,  4.0]
+      $$
+      with measured values
+      $$
+      y^T = [8.26383742,  6.44045188,  4.74903073,  4.5656476 ,  3.61011683,
+      3.32743918,  2.9643915 ,  1.02239181,  1.09485138,  1.84053372,
+      1.49110572]
+      $$
+      <img src='../images/genRegData.png' width="400px">
+    </p>
+    <p>Let us fit it to a model of the form $y_i = a_0 \cdot 1 + a_1 e^{-x_i} + a_2 e^{-2x_i} $</p>
+  </div></section>
+  <section><div class='inner_cell'>
+    <p>Our $\vect{Z}$ matrix has 3 columns for the basis functions $z_0 (x_i) = 1$, $z_1 (x_i) = e^{-x_i}$ and finally $z_2 = e^{-2x_i}$. It will have 11 rows corresponding to the 11 measurements.
+      <pre>
+        Z = 
+        [
+        [  1.00000000e+00,   2.00855369e+01,   4.03428793e+02],
+        [  1.00000000e+00,   9.97418245e+00,   9.94843156e+01],
+        [  1.00000000e+00,   4.95303242e+00,   2.45325302e+01],
+        [  1.00000000e+00,   2.45960311e+00,   6.04964746e+00],
+        [  1.00000000e+00,   1.22140276e+00,   1.49182470e+00],
+        [  1.00000000e+00,   6.06530660e-01,   3.67879441e-01],
+        [  1.00000000e+00,   3.01194212e-01,   9.07179533e-02],
+        [  1.00000000e+00,   1.49568619e-01,   2.23707719e-02],
+        [  1.00000000e+00,   7.42735782e-02,   5.51656442e-03],
+        [  1.00000000e+00,   3.68831674e-02,   1.36036804e-03],
+        [  1.00000000e+00,   1.83156389e-02,   3.35462628e-04]]
+      </pre>
+    </p>
+    <p>
+      Then we set up the linear equation problem by forming $\vect{Z}^T \vect{Z}$ 
+      <pre>
+        ZTZ =
+        [
+        [  1.10000000e+01,   3.98805235e+01,   5.35475292e+02],
+        [  3.98805235e+01,   5.35475292e+02,   9.23382518e+03],
+        [  5.35475292e+02,   9.23382518e+03,   1.73292733e+05]]        
+      </pre>
+      and $\vect{Z}^T \vect{y}$ 
+      <pre>
+        ZTy = 
+        [   39.36979777,   272.62352738,  4125.63079852]
+      </pre>
+    </p>
+  </div>
+</section>
+<section>
+  <div class="inner_cell">
+    <p>
+      The solutions of this problem are 
+      <pre>
+        a = [ 2.13758951,  0.58605735, -0.01537541]
+      </pre>
+      This means that our final model for the data is
+      $$
+      y = 2.13758951 + 0.58605735e^{-x} - 0.01537541e^{-2x}
+      $$
+    </p>
+    <p>
+      <img src='../images/fittedModel.png' width="500px">
+    </p>
+
+  </div>
+</section>
+</section>
+
+<section>
+  <div class="inner_cell">
+    <h2 id="Statistical interpretation of least squares">Statistical interpretation of least squares<a class="anchor-link" href="#Statistical interpretation of least squares">&#182;</a></h2>
+    <p>The matrix $(\vect{Z}^T \vect{Z})^{-1}$ contains the variance (diagonal elements) and covariances (off-diagonal elements) of the $a_i$ so can be used to estimate the accuracy of the parameter estimation.</p>
+    <p>We can use the Gauss Jordan method to find $(\vect{Z}^T \vect{Z})^{-1}$.</p>
+    <p>The diagonal elements of $(\vect{Z}^T \vect{Z})^{-1}$ can be designated as $z_{i,i}^{-1}$</p>
+    <p>We will call the standard error of our fitted model to the data $s_{y/x} = \frac{1}{\sqrt{n-m}}\sqrt{\sum_{i=0}^{i=n-1} [ y_i -  (a_0 z_0 (x_i) + a_1 z_1 (x_i) + a_2 z_2 (x_i) + \cdots + a_{m-1} z_{m-1} (x_i)) ] ^2}$</p>
+    <p>The variances of our parameters are given by $\text{var}(a_i) = s^2(a_i)= z_{i,i}^{-1} s_{y/x}^2$</p>
+  </div>
+</section>
+
+<section>
+  <div class='inner_cell'>
+    <p>We can now place error limits on our optimal parameters, $a_0, ... a_{m-1}$.</p>
+    <p>If our model is good, the real data should be approximately normally distributed around our model</p><p> You can then show that the parameters should have a <a href="https://mattatlincoln.github.io/teaching/statistics/lecture_9/#/6/2">t-distribution</a> with $n-2$ degrees of freedom.</p>
+    <p>We can put confidence limits on the parameters using $P(\text{true value of the ith parameter is in the interval } (a_i - t_{c/2,n-2} s(a_i) , a_i + t_{c/2,n-2} s(a_i) ) = c$ where $c$ is our confidence, for instance 0.95 to be 95% certain the parameter lies within those bounds and $t_c$ are the <a href="https://www.itl.nist.gov/div898/handbook/eda/section3/eda3672.htm"> critical values for the appropriate t distribution</a>.</p>
+  </div>
+</section>
+
+<section>
+  <div class="inner_cell">
+  <div style="background-color:Lavender; margin-left: 20px; margin-right: 20px; padding-bottom: 8px; padding-left:
+       8px; padding-right: 8px; padding-top: 8px; border-radius: 25px;">
+   <p>
+    Perform a fit to the following data.
+    <table>
+      <tr>
+        <td>
+    <pre>
+      x = {
+    10.00,
+    16.30,
+    23.00,
+    27.50,
+    31.00,
+    35.60,
+    39.00,
+    41.50,
+    42.90,
+    45.00,
+    46.00,
+    45.50,
+    46.00,
+    49.00,
+    50.00
+    }
+    </pre>          
+        </td>
+        <td>
+          <pre>
+    y = {
+    8.953,
+    16.405,
+    22.607,
+    27.769,
+    32.065,
+    35.641,
+    38.617,
+    41.095,
+    43.156,
+    44.872,
+    46.301,
+    47.490,
+    48.479,
+    49.303,
+    49.988
+    }
+    </pre>          
+
+        </td>
+      </tr>
+    </table>
+    use the model form $y_i = a_0 \cdot 1 + a_1 x_i + e_i$
+   </p>
+   <li>
+     Calculate an error estimate for the optimal parameters.
+     Note, you can perform the matrix inversion required using <a href="https://mattatlincoln.github.io/teaching/numerical_methods/lecture_2/#/7">Gauss Jordan elimination</a>, by by using a solver in Eigen and setting the right hand side equal to the unit matrix.
+   </li> 
+   <li>Upload your solutions and answers to related questions onto <a href="https://blackboard.lincoln.ac.uk/webapps/bbgs-acxiom-bb_bb60/execute/acxiomGateway?course_id=_127603_1&content_id=_2238111_1&mode=view">Blackboard</a> .</li>
+ </div><br><br>
+  </div>
+</section>
+
+<section>
+  <div class="inner_cell">
+ <div style="background-color:Lavender; margin-left: 20px; margin-right: 20px; padding-bottom: 8px; padding-left:
+       8px; padding-right: 8px; padding-top: 8px; border-radius: 25px;">
+
+  <p>Remember to break the problem down into smaller ones:
+    <li>Can you set up the $\vect{Z}$ matrix?</li>
+    <li>Can you find the transpose of the $\vect{Z}$ matrix?</li>
+    <li>Can you multiply the transposed and non-transposed matrices together?</li>
+    <li>Can you solve the system of linear equations?</li>
+  </p>
+</div>
+  </div>
+</section>
+
+<section>
+  <div class="inner_cell">
+    <h2 id="Summary and Further Reading">Summary and Further Reading<a class="anchor-link" href="#Summary and Further Reading">&#182;</a></h2>
+    <p>You should be reading additional material to provide a solid background to what we do in class</p>
+    <p>Reading: Capra and Canale, introduction to part 5 and chapter 17.</p>
+    <p>Lots of details inchapters 14 and 15 of <a href="http://apps.nrbook.com/c/index.html">Numerical Recipes</a>.</p>
+  </div>
+</section>
+
+</div> <!-- slides -->
+</div> <!-- reveal -->
+
+<script>
+
+  require(
+  {
+      // it makes sense to wait a little bit when you are loading
+      // reveal from a cdn in a slow connection environment
+      waitSeconds: 15
+    },
+    [
+    "../../../revealjs//lib/js/head.min.js",
+    "../../../revealjs//js/reveal.js"
+    ],
+
+    function(head, Reveal){
+
+      // Full list of configuration options available here: https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        mouseWheel: false,
+        center: false,
+        scroll: true,
+
+        // Parallax background image
+        parallaxBackgroundImage: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Anscombe%27s_quartet_3.svg/2000px-Anscombe%27s_quartet_3.svg.png',
+        // Parallax background size
+        parallaxBackgroundSize: '2000px 1455px', // CSS syntax, e.g. "2100px 900px
+
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/none
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+        { src: "../../../revealjs//lib/js/classList.js",
+        condition: function() { return !document.body.classList; } },
+        { src: "../../../revealjs//plugin/notes/notes.js",
+        async: true,
+        condition: function() { return !!document.body.classList; } }
+        ]
+      });
+
+      var update = function(event){
+        if(MathJax.Hub.getAllJax(Reveal.getCurrentSlide())){
+          MathJax.Hub.Rerender(Reveal.getCurrentSlide());
+        }
+      };
+
+      Reveal.addEventListener('slidechanged', update);
+
+      var update_scroll = function(event){
+        $(".reveal").scrollTop(0);
+      };
+
+      Reveal.addEventListener('slidechanged', update_scroll);
+
+    }
+    );
+  </script>
+
+</body>
+
+</html>
