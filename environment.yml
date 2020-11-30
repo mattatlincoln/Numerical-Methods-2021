@@ -8,4 +8,4 @@ dependencies:
   - blas * *openblas"
   - numpy
   - matplotlib
-  -scipy
+  - scipy
