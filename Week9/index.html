@@ -414,7 +414,8 @@ linebreaks: { automatic: true }
 	<code>
     //allocate space for our stencil
     int N = 301;
-    MatrixXd D(N,N);
+    // shorthand to get Zeros - you can fill a matrix with Zeros instead
+    MatrixXd D = MatrixXd::Zero(N,N);
 	  
     //fill the stencil	  
     D(0,0) = -2; //top row
