@@ -6,3 +6,6 @@ dependencies:
   - xtensor-blas=0.17.1
   - xeus-cling=0.5.1
   - blas * *openblas"
+  - numpy
+  - matplotlib
+  - scipy
