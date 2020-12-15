@@ -185,6 +185,7 @@ linebreaks: { automatic: true }
 
 <section>
   <div class="inner_cell">
+  	<h2>Finding Cosine terms</h2>
     <p>We can use the orthogonality of the functions to calculate the coefficients, $a_m$ and $b_m$. To do this we multiply by the function whose coefficient we wish to find, and integrate over $T$.</p>
     <p> For instance, to find $a_m$ the coefficient of $\cos \left( \frac{m \pi x}{l} \right)$ we multiply by $\phi_m = \cos \left( \frac{m \pi x}{l} \right)$ and integrate over the period:
       $$
@@ -204,6 +205,7 @@ linebreaks: { automatic: true }
 
 <section>
   <div class="inner_cell">
+  	<h2>Finding Sine terms</h2>
     <p> To find $b_m$ we multiply by $\psi_m$ and integrate over the period:
       $$
       \begin{align*}
@@ -255,7 +257,6 @@ linebreaks: { automatic: true }
    <li>Write code to perform these integrations. Check the orthogonality conditions are satisfied by your code.</li>
    <li>Calculate the Fourier series of the periodic function $f(x) = \cos(x)$ within $[-\pi ,\pi)$, which then repeats itself every $2 \pi$ - note you don't want to include $\pi$ where the function repeats itself.</li>
    <li>Calculate the Fourier series of the periodic function $f(x) = \cos(x) + \cos(2x)$ within $[-\pi ,\pi)$, which then repeats itself every $2 \pi$ - note you don't want to include $\pi$ where the function repeats itself.</li>
-   <li>Try the question on Bb. In that case I have given you the function at the sampled points numerically and you need to find the appropriate coefficients.</li>
  </div>
     <br><br>
 </div>
@@ -355,14 +356,6 @@ linebreaks: { automatic: true }
      $$
    </p>
  </div>
-</section>
-
-<section>
-  <div class="inner_cell">
-    <h2 id="Summary and Further Reading">Summary and Further Reading<a class="anchor-link" href="#Summary and Further Reading">&#182;</a></h2>
-    <p>You should be reading additional material to provide a solid background to what we do in class</p>
-    <p>All the textbooks contain sections on root finding and solving non-linear equations, for instance chapters 12 and 13 of <a href="http://www.nrbook.com/a/bookcpdf.php">Numerical Recipes</a>.</p>
-  </div>
 </section>
 
 </div> <!-- slides -->
